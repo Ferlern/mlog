@@ -1,0 +1,107 @@
+constants:
+    import author
+    import default_mul_bind_constants
+    set unit_amount 1
+
+flag_def:
+    import flag_def
+
+additional_code:
+binding:
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+
+    binding_constants:
+        import binding_chose_unit_by_sorter
+
+    unit1:
+        unit1_is_binding_needed:
+        import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
+
+    unit2:
+        unit2_is_binding_needed:
+        import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
+    
+    unit3:
+        unit3_is_binding_needed:
+        import unit_check_and_bind(<unit> = 3, <next_unit> = 4)
+
+    unit4:
+        unit4_is_binding_needed:
+        import unit_check_and_bind(<unit> = 4, <next_unit> = 5)
+
+    unit5:
+        unit5_is_binding_needed:
+        import unit_check_and_bind(<unit> = 5, <next_unit> = 6)
+
+    unit6:
+        unit6_is_binding_needed:
+        import unit_check_and_bind(<unit> = 6, <next_unit> = 7)
+
+    unit7:
+        unit7_is_binding_needed:
+        import unit_check_and_bind(<unit> = 7, <next_unit> = 8)
+
+    unit8:
+        unit8_is_binding_needed:
+        import last_unit_check_and_bind(<unit> = 8)
+    
+    free_up_binded_unit:
+        free_1_8:
+           import free_up_unit(<unit> = 1)
+
+        free_2_8:
+           import free_up_unit(<unit> = 2)
+
+        free_3_8:
+           import free_up_unit(<unit> = 3)
+
+        free_4_8:
+           import free_up_unit(<unit> = 4)
+           
+        free_5_8:
+           import free_up_unit(<unit> = 5)
+           
+        free_6_8:
+           import free_up_unit(<unit> = 6)
+           
+        free_7_8:
+           import free_up_unit(<unit> = 7)
+           
+        free_8_8:
+           import free_up_unit(<unit> = 8)
+           
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    unit1_control:
+        ubind unit1
+        ucontrol move @thisx @thisy
+    unit2_control:
+        ubind unit2
+        ucontrol move @thisx @thisy
+    unit3_control:
+        ubind unit3
+        ucontrol move @thisx @thisy
+    unit4_control:
+        ubind unit4
+        ucontrol move @thisx @thisy
+    unit5_control:
+        ubind unit5
+        ucontrol move @thisx @thisy
+    unit6_control:
+        ubind unit6
+        ucontrol move @thisx @thisy
+    unit7_control:
+        ubind unit7
+        ucontrol move @thisx @thisy
+    unit8_control:
+        ubind unit8
+        ucontrol move @thisx @thisy
+
+    main_part_end:
+        jump additional_code always

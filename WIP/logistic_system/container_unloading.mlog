@@ -1,0 +1,74 @@
+constants:
+    set unit_type @mega
+    set dx 1.5
+    set dy 0.5
+    set unload_item @item
+    set unload_amount 0
+    set max_items 299
+
+flag_def:
+    op rand flag 100000 b
+    op add flag flag 1000
+    op ceil flag flag b
+
+unit_check:
+    sensor unit_flag @unit @flag
+    jump unit_bind notEqual flag unit_flag
+    jump main_part always x false
+
+unit_bind:
+    ubind @mega
+    set unit @unit
+    sensor unit_flag @unit @flag
+    jump unit_bind greaterThan unit_flag 50
+    ucontrol flag flag
+
+main_part:
+
+    check_is_container_exist:
+        getlink unload_block 0
+        jump check_is_have_payload equal unload_block false
+        jump check_is_requst_completed always
+
+    check_is_requst_completed:
+        sensor req_item_amount unload_block unload_item
+        sensor total_item_amount unload_block @totalItems
+        jump take_unload_block greaterThan req_item_amount unload_amount
+        jump take_unload_block greaterThan total_item_amount max_items
+        jump unit_check always
+    
+    check_is_have_payload:
+        sensor amount @unit @payloadCount
+        jump place_unload_block notEqual amount 0
+        jump return_to_logistic_network always
+
+    take_unload_block:
+        sensor x unload_block @x
+        sensor y unload_block @y
+        ucontrol move x y 0 0 0
+        ucontrol within x y 1 on_position 0
+        jump unit_check notEqual on_position true
+        ucontrol payTake 0 0 0 0 0
+        jump return_to_logistic_network always
+
+    place_unload_block:
+        op add place_x dx @thisx
+        op add place_y dy @thisy
+        ucontrol move place_x place_y 0 0 0
+        ucontrol within place_x place_y 1 on_position 0
+        jump unit_check notEqual on_position true
+        ucontrol payDrop 0 0 0 0 0
+        jump unit_check always
+
+
+return_to_logistic_network:
+    op add flag flag 1000000
+    ucontrol flag flag 0 0 0 0
+    jump get_from_logistic_network always
+
+get_from_logistic_network:
+    sensor unit_flag unit @flag
+    jump get_from_logistic_network greaterThan unit_flag 1000000
+    op sub flag flag 1000000
+    jump unit_bind notEqual flag unit_flag
+    jump main_part always

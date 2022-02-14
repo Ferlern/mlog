@@ -1,0 +1,141 @@
+constants:
+    import author
+    set unit_type @flare
+    set item1 @item
+    set item2 @item
+    set item3 @item
+    set item4 @item
+    set item5 @item
+    set item1_amount @item
+    set item2_amount @item
+    set item3_amount @item
+    set item4_amount @item
+    set item5_amount @item
+
+flag_def:
+    import flag_def
+
+checks_is_binding_needed:
+    blocks:
+        set block1 @block
+        set block2 @block
+        set block3 @block
+        set block4 @block
+        set block5 @block
+
+    check_what_item_needed:
+        sensor core_dead core @dead
+        jump unit_check notEqual core_dead false
+        check_item1:
+
+            check_is_load_block_exists:
+                set load_block block1
+                jump check_item2 equal load_block false
+
+            set item item1
+            sensor item_in_core core item
+            jump check_item2 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump unit_check lessThan item_in_load_block item1_amount
+
+        check_item2:
+
+            check_is_load_block_exists:
+                set load_block block2
+                jump check_item3 equal load_block false
+
+            set item item2
+            sensor item_in_core core item
+            jump check_item3 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump unit_check lessThan item_in_load_block item2_amount
+
+        check_item3:
+
+            check_is_load_block_exists:
+                set load_block block3
+                jump check_item4 equal load_block false
+
+            set item item3
+            sensor item_in_core core item
+            jump check_item4 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump unit_check lessThan item_in_load_block item3_amount
+
+        check_item4:
+
+            check_is_load_block_exists:
+                set load_block block4
+                jump check_item5 equal load_block false
+
+            set item item4
+            sensor item_in_core core item
+            jump check_item5 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump unit_check lessThan item_in_load_block item4_amount
+
+        check_item5:
+
+            check_is_load_block_exists:
+                set load_block block5
+                jump not_needed equal load_block false
+
+            set item item5
+            sensor item_in_core core item
+            jump not_needed lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump unit_check lessThan item_in_load_block item5_amount
+
+        not_needed:
+            sensor unit_flag @unit @flag
+            jump checks_is_binding_needed notEqual flag unit_flag
+
+            is_unit_exists:
+                jump free_up_binded_unit notEqual @unit false
+                jump main_part always
+
+free_up_binded_unit:
+    ucontrol flag 0
+    jump checks_is_binding_needed always
+
+unit_check:
+    sensor unit_dead @unit @dead
+    jump unit_bind notEqual unit_dead 0
+    sensor unit_flag @unit @flag
+    jump unit_bind notEqual flag unit_flag
+    jump main_part always
+
+unit_bind:
+    ubind unit_type
+
+    unit_bind_check:
+        sensor controller @unit @controller
+        jump unit_bind_bind equal controller @unit
+        sensor unit_flag @unit @flag
+        jump checks_is_binding_needed greaterThan unit_flag 0
+
+    unit_bind_bind:
+        set unit @unit
+        ucontrol flag flag
+
+main_part:
+    ulocate building core false i_love_you corex corey coref core
+    check_is_have_item:
+        sensor item_in_unit @unit item
+        jump drop_item_to_load_block greaterThan item_in_unit 0
+
+    take_item_from_core:
+        ucontrol move corex corey
+        ucontrol itemTake core item 999
+        ucontrol itemDrop core 999
+        jump main_part_end always
+
+    drop_item_to_load_block:
+        sensor load_block_x load_block @x
+        sensor load_block_y load_block @y
+        ucontrol move load_block_x load_block_y
+        ucontrol itemDrop load_block 999
+        jump main_part_end always
+    
+    main_part_end:
+        jump checks_is_binding_needed always

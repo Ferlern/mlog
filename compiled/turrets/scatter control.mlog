@@ -1,0 +1,28 @@
+radar enemy flying any distance <from> 1 enemy
+jump shoot notEqual enemy false
+radar enemy flying any distance <from> 1 enemy
+sensor enemy_type enemy @type
+jump shoot equal enemy_type @quasar
+
+stop:
+    control shootp scatter1 enemy 0
+    control shootp scatter2 enemy 0
+    control shootp scatter3 enemy 0
+    control shootp scatter4 enemy 0
+    control shootp scatter5 enemy 0
+    control shootp scatter6 enemy 0
+    control shootp scatter7 enemy 0
+    control shootp scatter8 enemy 0
+    jump scatter_control_end always
+
+shoot:
+    control shootp scatter1 enemy 1
+    control shootp scatter2 enemy 1
+    control shootp scatter3 enemy 1
+    control shootp scatter4 enemy 1
+    control shootp scatter5 enemy 1
+    control shootp scatter6 enemy 1
+    control shootp scatter7 enemy 1
+    control shootp scatter8 enemy 1
+
+scatter_control_end:

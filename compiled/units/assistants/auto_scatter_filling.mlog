@@ -1,0 +1,312 @@
+constants:
+    set creator "[SG] Визя"
+    set attempt_amount 5
+    set time_between_bind 3000
+    set unit_amount 3
+
+flag_def:
+    op mul mx @thisx 1000
+    op add flag mx @thisy
+
+binding:
+    leader:
+        check_leader:
+            sensor unit_dead leader @dead
+            jump bind_leader notEqual unit_dead false
+            jump leader_end always
+        
+        bind_leader:
+            ubind @gamma
+            jump set_leader notEqual @unit false
+            ubind @beta
+            jump set_leader notEqual @unit false
+            ubind @alpha
+            jump set_leader notEqual @unit false
+            jump leader_end always
+        
+        set_leader:
+            set leader @unit
+        
+        leader_end:
+
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+
+    binding_constants:
+        sensor choice sorter1 @config
+        
+        jump free_up_binded_unit equal choice false
+        jump unit1 equal prev_choice choice
+        set prev_choice choice
+        
+        set unit_type @flare
+        jump free_up_binded_unit equal choice @copper
+        
+        set unit_type @mono
+        jump free_up_binded_unit equal choice @lead
+        
+        set unit_type @horizon
+        jump free_up_binded_unit equal choice @metaglass
+        
+        set unit_type @atrax
+        jump free_up_binded_unit equal choice @graphite
+        
+        set unit_type false
+        jump free_up_binded_unit always
+
+    unit1:
+        unit1_is_binding_needed:
+        unit1_check:
+            sensor unit_dead unit1 @dead
+            jump unit1_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit1 @flag
+            jump unit1_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit2 greaterThan unit_amount 1
+                jump binding_end always
+        
+        unit1_set_attempt_var:
+            set unit1 false
+            set attempt 0
+        
+        unit1_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit1_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit1_bind greaterThan unit_flag 0
+        
+            unit1_bind_bind:
+                set unit1 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit2 greaterThan unit_amount 1
+                    jump binding_end always
+
+    unit2:
+        unit2_is_binding_needed:
+        unit2_check:
+            sensor unit_dead unit2 @dead
+            jump unit2_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit2 @flag
+            jump unit2_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit3 greaterThan unit_amount 2
+                jump binding_end always
+        
+        unit2_set_attempt_var:
+            set unit2 false
+            set attempt 0
+        
+        unit2_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit2_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit2_bind greaterThan unit_flag 0
+        
+            unit2_bind_bind:
+                set unit2 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit3 greaterThan unit_amount 2
+                    jump binding_end always
+    
+    unit3:
+        unit3_is_binding_needed:
+        unit3_check:
+            sensor unit_dead unit3 @dead
+            jump unit3_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit3 @flag
+            jump unit3_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump binding_end always
+        
+        unit3_set_attempt_var:
+            set unit3 false
+            set attempt 0
+        
+        unit3_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit3_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit3_bind greaterThan unit_flag 0
+        
+            unit3_bind_bind:
+                set unit3 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump binding_end always
+    
+    free_up_binded_unit:
+        free_1_3:
+           ubind unit1
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit1 false
+
+        free_2_3:
+           ubind unit2
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit2 false
+
+        free_3_3:
+           ubind unit3
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit3 false
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    set item @lead
+
+    set_leader_position:
+        sensor leader_x leader @x
+        sensor leader_y leader @y
+        sensor shooting leader @shooting
+        sensor shootX leader @shootX
+        sensor shootY leader @shootY
+
+    unit1_control:
+        ubind unit1
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump main_task1 equal item_in_unit item
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit1_end always
+
+        main_task1:
+            ulocate building turret false i_realy_love_you turx tury found tur
+            sensor type tur @type
+
+            jump go_to_leader1 notEqual type @scatter
+
+            sensor ammo tur @ammo
+            jump go_to_leader1 greaterThan ammo 7
+
+            fill_scatter1:
+                ucontrol move turx tury
+                ucontrol itemDrop tur 999
+                jump unit1_end always
+
+            go_to_leader1:
+                jump to_cursor1 equal shooting true
+                ucontrol approach leader_x leader_y 10
+                jump unit1_end always
+
+                to_cursor1:
+                    ucontrol move shootX shootY
+
+        unit1_end:
+ 
+    unit2_control:
+        ubind unit2
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump main_task2 equal item_in_unit item
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit2_end always
+
+        main_task2:
+            ulocate building turret false i_realy_love_you turx tury found tur
+            sensor type tur @type
+
+            jump go_to_leader2 notEqual type @scatter
+
+            sensor ammo tur @ammo
+            jump go_to_leader2 greaterThan ammo 7
+
+            fill_scatter2:
+                ucontrol move turx tury
+                ucontrol itemDrop tur 999
+                jump unit2_end always
+
+            go_to_leader2:
+                jump to_cursor2 equal shooting true
+                ucontrol approach leader_x leader_y 15
+                jump unit2_end always
+
+                to_cursor2:
+                    ucontrol move shootX shootY
+
+        unit2_end:
+
+    unit3_control:
+        ubind unit3
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump main_task3 equal item_in_unit item
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit3_end always
+
+        main_task3:
+            ulocate building turret false i_realy_love_you turx tury found tur
+            sensor type tur @type
+
+            jump go_to_leader3 notEqual type @scatter
+
+            sensor ammo tur @ammo
+            jump go_to_leader3 greaterThan ammo 7
+
+            fill_scatter3:
+                ucontrol move turx tury
+                ucontrol itemDrop tur 999
+                jump unit3_end always
+
+            go_to_leader3:
+                jump to_cursor3 equal shooting true
+                ucontrol approach leader_x leader_y 20
+                jump unit3_end always
+
+                to_cursor3:
+                    ucontrol move shootX shootY
+
+        unit3_end:
+
+    main_part_end:
+        jump binding always

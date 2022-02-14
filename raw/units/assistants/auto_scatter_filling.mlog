@@ -1,0 +1,167 @@
+constants:
+    import author
+    import default_mul_bind_constants
+    set unit_amount 3
+
+flag_def:
+    import flag_def
+
+binding:
+    leader:
+        import leader
+
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+
+    binding_constants:
+        import binding_chose_unit_by_sorter
+
+    unit1:
+        unit1_is_binding_needed:
+        import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
+
+    unit2:
+        unit2_is_binding_needed:
+        import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
+    
+    unit3:
+        unit3_is_binding_needed:
+        import last_unit_check_and_bind(<unit> = 3)
+    
+    free_up_binded_unit:
+        free_1_3:
+           import free_up_unit(<unit> = 1)
+
+        free_2_3:
+           import free_up_unit(<unit> = 2)
+
+        free_3_3:
+           import free_up_unit(<unit> = 3)
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    set item @lead
+
+    set_leader_position:
+        import set_leader_position
+
+    unit1_control:
+        ubind unit1
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump main_task1 equal item_in_unit item
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit1_end always
+
+        main_task1:
+            ulocate building turret false i_realy_love_you turx tury found tur
+            sensor type tur @type
+
+            jump go_to_leader1 notEqual type @scatter
+
+            sensor ammo tur @ammo
+            jump go_to_leader1 greaterThan ammo 7
+
+            fill_scatter1:
+                ucontrol move turx tury
+                ucontrol itemDrop tur 999
+                jump unit1_end always
+
+            go_to_leader1:
+                jump to_cursor1 equal shooting true
+                ucontrol approach leader_x leader_y 10
+                jump unit1_end always
+
+                to_cursor1:
+                    ucontrol move shootX shootY
+
+        unit1_end:
+ 
+    unit2_control:
+        ubind unit2
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump main_task2 equal item_in_unit item
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit2_end always
+
+        main_task2:
+            ulocate building turret false i_realy_love_you turx tury found tur
+            sensor type tur @type
+
+            jump go_to_leader2 notEqual type @scatter
+
+            sensor ammo tur @ammo
+            jump go_to_leader2 greaterThan ammo 7
+
+            fill_scatter2:
+                ucontrol move turx tury
+                ucontrol itemDrop tur 999
+                jump unit2_end always
+
+            go_to_leader2:
+                jump to_cursor2 equal shooting true
+                ucontrol approach leader_x leader_y 15
+                jump unit2_end always
+
+                to_cursor2:
+                    ucontrol move shootX shootY
+
+        unit2_end:
+
+    unit3_control:
+        ubind unit3
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump main_task3 equal item_in_unit item
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit3_end always
+
+        main_task3:
+            ulocate building turret false i_realy_love_you turx tury found tur
+            sensor type tur @type
+
+            jump go_to_leader3 notEqual type @scatter
+
+            sensor ammo tur @ammo
+            jump go_to_leader3 greaterThan ammo 7
+
+            fill_scatter3:
+                ucontrol move turx tury
+                ucontrol itemDrop tur 999
+                jump unit3_end always
+
+            go_to_leader3:
+                jump to_cursor3 equal shooting true
+                ucontrol approach leader_x leader_y 20
+                jump unit3_end always
+
+                to_cursor3:
+                    ucontrol move shootX shootY
+
+        unit3_end:
+
+    main_part_end:
+        jump binding always

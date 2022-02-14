@@ -1,0 +1,327 @@
+constants:
+    import author
+    import default_mul_bind_constants
+    set unit_amount 1
+
+    items:
+        set item1 @item
+        set item2 @item
+        set item3 @item
+        set item4 @item
+        set item5 @item
+
+        set item1_amount @item
+        set item2_amount @item
+        set item3_amount @item
+        set item4_amount @item
+        set item5_amount @item
+
+flag_def:
+    import flag_def
+
+additional_code:
+binding:
+    is_binding_needed:
+        blocks:
+            set block1 @block
+            set block2 @block
+            set block3 @block
+            set block4 @block
+            set block5 @block
+
+        check_what_item_needed:
+            sensor core_dead core @dead
+            jump binding_constants notEqual core_dead false
+
+            set binding_needed false
+            set item1_needed false
+            set item2_needed false
+            set item3_needed false
+            set item4_needed false
+            set item5_needed false
+
+            check_item1:
+
+                check_is_load_block_exists:
+                    jump check_item2 equal block1 false
+
+                set item item1
+                sensor item_in_core core item
+                jump check_item2 lessThan item_in_core 50
+                sensor item_in_load_block block1 item
+                jump check_item2 greaterThanEq item_in_load_block item1_amount
+
+                set item1_needed true
+                set binding_needed true
+
+            check_item2:
+
+                check_is_load_block_exists:
+                    jump check_item3 equal block2 false
+
+                set item item2
+                sensor item_in_core core item
+                jump check_item3 lessThan item_in_core 50
+                sensor item_in_load_block block2 item
+                jump check_item3 greaterThanEq item_in_load_block item2_amount
+
+                set item2_needed true
+                set binding_needed true
+
+            check_item3:
+
+                check_is_load_block_exists:
+                    jump check_item4 equal block3 false
+
+                set item item3
+                sensor item_in_core core item
+                jump check_item4 lessThan item_in_core 50
+                sensor item_in_load_block block3 item
+                jump check_item4 greaterThanEq item_in_load_block item3_amount
+
+                set item3_needed true
+                set binding_needed true
+
+            check_item4:
+
+                check_is_load_block_exists:
+                    jump check_item5 equal block4 false
+
+                set item item4
+                sensor item_in_core core item
+                jump check_item5 lessThan item_in_core 50
+                sensor item_in_load_block block4 item
+                jump check_item5 greaterThanEq item_in_load_block item4_amount
+
+                set item4_needed true
+                set binding_needed true
+
+            check_item5:
+
+                check_is_load_block_exists:
+                    jump is_binding_needed_end equal block5 false
+
+                set item item5
+                sensor item_in_core core item
+                jump is_binding_needed_end lessThan item_in_core 50
+                sensor item_in_load_block block5 item
+                jump is_binding_needed_end greaterThanEq item_in_load_block item5_amount
+
+                set item5_needed true
+                set binding_needed true
+
+        is_binding_needed_end:
+            jump free_up_binded_unit notEqual binding_needed true
+            op sub timer @time time_between_bind
+            jump main_part greaterThan last_time timer
+
+    binding_constants:
+        import binding_chose_unit_by_sorter
+
+    unit1:
+        unit1_is_binding_needed:
+        import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
+
+    unit2:
+        unit2_is_binding_needed:
+        import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
+    
+    unit3:
+        unit3_is_binding_needed:
+        import unit_check_and_bind(<unit> = 3, <next_unit> = 4)
+
+    unit4:
+        unit4_is_binding_needed:
+        import unit_check_and_bind(<unit> = 4, <next_unit> = 5)
+
+    unit5:
+        unit5_is_binding_needed:
+        import unit_check_and_bind(<unit> = 5, <next_unit> = 6)
+
+    unit6:
+        unit6_is_binding_needed:
+        import unit_check_and_bind(<unit> = 6, <next_unit> = 7)
+
+    unit7:
+        unit7_is_binding_needed:
+        import unit_check_and_bind(<unit> = 7, <next_unit> = 8)
+
+    unit8:
+        unit8_is_binding_needed:
+        import last_unit_check_and_bind(<unit> = 8)
+    
+    free_up_binded_unit:
+        free_1_8:
+           import free_up_unit(<unit> = 1)
+
+        free_2_8:
+           import free_up_unit(<unit> = 2)
+
+        free_3_8:
+           import free_up_unit(<unit> = 3)
+
+        free_4_8:
+           import free_up_unit(<unit> = 4)
+           
+        free_5_8:
+           import free_up_unit(<unit> = 5)
+           
+        free_6_8:
+           import free_up_unit(<unit> = 6)
+           
+        free_7_8:
+           import free_up_unit(<unit> = 7)
+           
+        free_8_8:
+           import free_up_unit(<unit> = 8)
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    unit1_control:
+        ubind unit1
+        ulocate building core false i_love_you corex corey coref core
+        op add counter @counter 5
+
+        jump item1 equal item1_needed true
+        jump item2 equal item2_needed true
+        jump item3 equal item3_needed true
+        jump item4 equal item4_needed true
+        jump item5 equal item5_needed true
+
+    unit2_control:
+        jump main_part_end lessThan unit_amount 2
+        ubind unit2
+        op add counter @counter 5
+
+        jump item2 equal item2_needed true
+        jump item3 equal item3_needed true
+        jump item4 equal item4_needed true
+        jump item5 equal item5_needed true
+        jump item1 equal item1_needed true
+
+    unit3_control:
+        jump main_part_end lessThan unit_amount 3
+        ubind unit3
+        op add counter @counter 5
+
+        jump item3 equal item3_needed true
+        jump item4 equal item4_needed true
+        jump item5 equal item5_needed true
+        jump item1 equal item1_needed true
+        jump item2 equal item2_needed true
+
+    unit4_control:
+        jump main_part_end lessThan unit_amount 4
+        ubind unit4
+        op add counter @counter 5
+
+        jump item4 equal item4_needed true
+        jump item5 equal item5_needed true
+        jump item1 equal item1_needed true
+        jump item2 equal item2_needed true
+        jump item3 equal item3_needed true
+
+    unit5_control:
+        jump main_part_end lessThan unit_amount 5
+        ubind unit5
+        op add counter @counter 5
+
+        jump item5 equal item5_needed true
+        jump item1 equal item1_needed true
+        jump item2 equal item2_needed true
+        jump item3 equal item3_needed true
+        jump item4 equal item4_needed true
+
+    unit6_control:
+        jump main_part_end lessThan unit_amount 6
+        ubind unit6
+        op add counter @counter 5
+
+        jump item1 equal item1_needed true
+        jump item3 equal item3_needed true
+        jump item2 equal item2_needed true
+        jump item4 equal item4_needed true
+        jump item5 equal item5_needed true
+
+    unit7_control:
+        jump main_part_end lessThan unit_amount 7
+        ubind unit7
+        op add counter @counter 5
+
+        jump item3 equal item3_needed true
+        jump item5 equal item5_needed true
+        jump item1 equal item1_needed true
+        jump item2 equal item2_needed true
+        jump item4 equal item4_needed true
+
+    unit8_control:
+        jump main_part_end lessThan unit_amount 8
+        ubind unit8
+        op add counter @counter 5
+
+        jump item4 equal item4_needed true
+        jump item2 equal item2_needed true
+        jump item1 equal item1_needed true
+        jump item5 equal item5_needed true
+        jump item3 equal item3_needed true
+
+    main_part_end:
+        jump additional_code always
+
+    unit_task:
+        item1:
+            set item item1
+            set load_block block1
+            jump check_is_have_item always
+
+        item2:
+            set item item2
+            set load_block block2
+            jump check_is_have_item always
+
+        item3:
+            set item item3
+            set load_block block3
+            jump check_is_have_item always
+
+        item4:
+            set item item4
+            set load_block block4
+            jump check_is_have_item always
+
+        item5:
+            set item item5
+            set load_block block5
+            jump check_is_have_item always
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block equal item_in_unit item
+            jump take_item_from_core equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            sensor load_block_capacity block1 @itemCapacity
+
+            jump take_item_from_core equal item_in_load_block false
+            jump take_item_from_core greaterThanEq item_in_load_block load_block_capacity
+
+            jump drop_item_to_load_block always
+
+            take_item_from_core:
+                ucontrol move corex corey
+                ucontrol itemTake core item 999
+                ucontrol itemDrop core 999
+                jump unit_end always
+
+            drop_item_to_load_block:
+                sensor load_block_x load_block @x
+                sensor load_block_y load_block @y
+                ucontrol move load_block_x load_block_y
+                ucontrol itemDrop load_block 999
+                jump unit_end always
+
+            unit_end:
+                set @counter counter

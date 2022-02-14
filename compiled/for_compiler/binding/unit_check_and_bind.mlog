@@ -1,0 +1,33 @@
+unit<unit>_check:
+    sensor unit_dead unit<unit> @dead
+    jump unit<unit>_set_attempt_var notEqual unit_dead false
+    sensor unit_flag unit<unit> @flag
+    jump unit<unit>_set_attempt_var notEqual flag unit_flag
+
+    checked_successfully:
+        jump unit<next_unit> greaterThan unit_amount <unit>
+        jump binding_end always
+
+unit<unit>_set_attempt_var:
+    set unit<unit> false
+    set attempt 0
+
+unit<unit>_bind:
+
+    ubind unit_type
+    op add attempt attempt 1
+    jump binding_end greaterThan attempt attempt_amount
+
+    unit_bind_check:
+        sensor controller @unit @controller
+        jump unit<unit>_bind_bind equal controller @unit
+        sensor unit_flag @unit @flag
+        jump unit<unit>_bind greaterThan unit_flag 0
+
+    unit<unit>_bind_bind:
+        set unit<unit> @unit
+        ucontrol flag flag
+
+        binded_successfully:
+            jump unit<next_unit> greaterThan unit_amount <unit>
+            jump binding_end always

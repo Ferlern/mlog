@@ -1,0 +1,23 @@
+constants:
+    import author
+    set unit_type @mega
+    set key 501
+
+beacon:
+    radar enemy any any maxHealth hail1 1 enemy
+    sensor type enemy @type
+    jump get_and_code_coords equal type @zenith
+    jump get_and_code_coords equal type @quad
+    jump beacon always
+
+get_and_code_coords:
+    sensor enemy_x enemy @x
+    sensor enemy_y enemy @y
+
+    op mul keyx enemy_x key
+    op add keyxy keyx enemy_y
+
+give_flags:
+    ubind unit_type
+    ucontrol flag keyxy
+    jump beacon always

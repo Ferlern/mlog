@@ -1,0 +1,18 @@
+check_leader:
+    sensor unit_dead leader @dead
+    jump bind_leader notEqual unit_dead false
+    jump leader_end always
+
+bind_leader:
+    ubind @gamma
+    jump set_leader notEqual @unit false
+    ubind @beta
+    jump set_leader notEqual @unit false
+    ubind @alpha
+    jump set_leader notEqual @unit false
+    jump leader_end always
+
+set_leader:
+    set leader @unit
+
+leader_end:

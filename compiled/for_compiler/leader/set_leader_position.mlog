@@ -1,0 +1,5 @@
+sensor leader_x leader @x
+sensor leader_y leader @y
+sensor shooting leader @shooting
+sensor shootX leader @shootX
+sensor shootY leader @shootY

@@ -1,0 +1,432 @@
+constants:
+    import author
+    import default_mul_bind_constants
+    set unit_amount 2
+    set max_capacity 300
+    set item1 @item
+    set item2 @item
+    set item3 @item
+    set item4 @item
+    set item5 @item
+    set item1_amount @item
+    set item2_amount @item
+    set item3_amount @item
+    set item4_amount @item
+    set item5_amount @item
+
+flag_def:
+    import flag_def
+
+binding:
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+
+    check_is_load_block_exists:
+        set load_block @block
+        jump free_up_binded_unit equal load_block false
+
+    check_what_item_needed:
+        sensor core_dead core @dead
+        jump binding_constants notEqual core_dead false
+
+        check_item1:
+            set item item1
+            sensor item_in_core core item
+            jump check_item2 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump binding_constants lessThan item_in_load_block item1_amount
+
+        check_item2:
+            set item item2
+            sensor item_in_core core item
+            jump check_item3 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump binding_constants lessThan item_in_load_block item2_amount
+
+        check_item3:
+            set item item3
+            sensor item_in_core core item
+            jump check_item4 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump binding_constants lessThan item_in_load_block item3_amount
+
+        check_item4:
+            set item item4
+            sensor item_in_core core item
+            jump check_item5 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump binding_constants lessThan item_in_load_block item4_amount
+
+        check_item5:
+            set item item5
+            sensor item_in_core core item
+            jump free_up_binded_unit lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump binding_constants lessThan item_in_load_block item5_amount
+            jump free_up_binded_unit always
+
+    binding_constants:
+        import binding_chose_unit_by_sorter
+
+    unit1:
+        unit1_is_binding_needed:
+        import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
+
+    unit2:
+        unit2_is_binding_needed:
+        import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
+    
+    unit3:
+        unit3_is_binding_needed:
+        import unit_check_and_bind(<unit> = 3, <next_unit> = 4)
+
+    unit4:
+        unit4_is_binding_needed:
+        import unit_check_and_bind(<unit> = 4, <next_unit> = 5)
+
+    unit5:
+        unit5_is_binding_needed:
+        import unit_check_and_bind(<unit> = 5, <next_unit> = 6)
+
+    unit6:
+        unit6_is_binding_needed:
+        import unit_check_and_bind(<unit> = 6, <next_unit> = 7)
+
+    unit7:
+        unit7_is_binding_needed:
+        import unit_check_and_bind(<unit> = 7, <next_unit> = 8)
+
+    unit8:
+        unit8_is_binding_needed:
+        import last_unit_check_and_bind(<unit> = 8)
+    
+    free_up_binded_unit:
+        free_1_8:
+           import free_up_unit(<unit> = 1)
+
+        free_2_8:
+           import free_up_unit(<unit> = 2)
+
+        free_3_8:
+           import free_up_unit(<unit> = 3)
+
+        free_4_8:
+           import free_up_unit(<unit> = 4)
+           
+        free_5_8:
+           import free_up_unit(<unit> = 5)
+           
+        free_6_8:
+           import free_up_unit(<unit> = 6)
+           
+        free_7_8:
+           import free_up_unit(<unit> = 7)
+           
+        free_8_8:
+           import free_up_unit(<unit> = 8)
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    check_what_item_needed:
+        sensor core_dead core @dead
+        jump check_what_item_needed_end notEqual core_dead false
+
+        check_item1:
+            set item item1
+            sensor item_in_core core item
+            jump check_item2 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump check_what_item_needed_end lessThan item_in_load_block item1_amount
+        check_item2:
+            set item item2
+            sensor item_in_core core item
+            jump check_item3 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump check_what_item_needed_end lessThan item_in_load_block item2_amount
+        check_item3:
+            set item item3
+            sensor item_in_core core item
+            jump check_item4 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump check_what_item_needed_end lessThan item_in_load_block item3_amount
+        check_item4:
+            set item item4
+            sensor item_in_core core item
+            jump check_item5 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump check_what_item_needed_end lessThan item_in_load_block item4_amount
+        check_item5:
+            set item item5
+            sensor item_in_core core item
+            jump free_1_8 lessThan item_in_core 50
+            sensor item_in_load_block load_block item
+            jump check_what_item_needed_end lessThan item_in_load_block item5_amount
+            jump free_1_8 always
+
+        check_what_item_needed_end:
+
+    unit1_control:
+        ubind unit1
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block1 equal item_in_unit item
+            jump take_item_from_core1 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core1 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block1 equal item_in_unit item1
+            jump drop_item_to_load_block1 equal item_in_unit item2
+            jump drop_item_to_load_block1 equal item_in_unit item3
+            jump drop_item_to_load_block1 equal item_in_unit item4
+            jump drop_item_to_load_block1 equal item_in_unit item5
+
+        take_item_from_core1:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit1_end always
+
+        drop_item_to_load_block1:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit1_end always
+
+        unit1_end:
+            jump main_part_end unit_amount lessThan 2
+    
+    unit2_control:
+        ubind unit2
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block2 equal item_in_unit item
+            jump take_item_from_core2 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core2 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block2 equal item_in_unit item1
+            jump drop_item_to_load_block2 equal item_in_unit item2
+            jump drop_item_to_load_block2 equal item_in_unit item3
+            jump drop_item_to_load_block2 equal item_in_unit item4
+            jump drop_item_to_load_block2 equal item_in_unit item5
+
+        take_item_from_core2:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit2_end always
+
+        drop_item_to_load_block2:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit2_end always
+
+        unit2_end:
+            jump main_part_end unit_amount lessThan 3
+
+    unit3_control:
+        ubind unit3
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block3 equal item_in_unit item
+            jump take_item_from_core3 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core3 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block3 equal item_in_unit item1
+            jump drop_item_to_load_block3 equal item_in_unit item2
+            jump drop_item_to_load_block3 equal item_in_unit item3
+            jump drop_item_to_load_block3 equal item_in_unit item4
+            jump drop_item_to_load_block3 equal item_in_unit item5
+
+        take_item_from_core3:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit3_end always
+
+        drop_item_to_load_block3:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit3_end always
+
+        unit3_end:
+            jump main_part_end unit_amount lessThan 4
+
+    unit4_control:
+        ubind unit4
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block4 equal item_in_unit item
+            jump take_item_from_core4 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core4 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block4 equal item_in_unit item1
+            jump drop_item_to_load_block4 equal item_in_unit item2
+            jump drop_item_to_load_block4 equal item_in_unit item3
+            jump drop_item_to_load_block4 equal item_in_unit item4
+            jump drop_item_to_load_block4 equal item_in_unit item5
+
+        take_item_from_core4:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit4_end always
+
+        drop_item_to_load_block4:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit4_end always
+
+        unit4_end:
+            jump main_part_end unit_amount lessThan 5
+
+    unit5_control:
+        ubind unit5
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block5 equal item_in_unit item
+            jump take_item_from_core5 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core5 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block5 equal item_in_unit item1
+            jump drop_item_to_load_block5 equal item_in_unit item2
+            jump drop_item_to_load_block5 equal item_in_unit item3
+            jump drop_item_to_load_block5 equal item_in_unit item4
+            jump drop_item_to_load_block5 equal item_in_unit item5
+
+        take_item_from_core5:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit5_end always
+
+        drop_item_to_load_block5:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit5_end always
+
+        unit5_end:
+            jump main_part_end unit_amount lessThan 6
+
+    unit6_control:
+        ubind unit6
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block6 equal item_in_unit item
+            jump take_item_from_core6 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core6 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block6 equal item_in_unit item1
+            jump drop_item_to_load_block6 equal item_in_unit item2
+            jump drop_item_to_load_block6 equal item_in_unit item3
+            jump drop_item_to_load_block6 equal item_in_unit item4
+            jump drop_item_to_load_block6 equal item_in_unit item5
+
+        take_item_from_core6:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit6_end always
+
+        drop_item_to_load_block6:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit6_end always
+
+        unit6_end:
+            jump main_part_end unit_amount lessThan 7
+
+    unit7_control:
+        ubind unit7
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block7 equal item_in_unit item
+            jump take_item_from_core7 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core7 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block7 equal item_in_unit item1
+            jump drop_item_to_load_block7 equal item_in_unit item2
+            jump drop_item_to_load_block7 equal item_in_unit item3
+            jump drop_item_to_load_block7 equal item_in_unit item4
+            jump drop_item_to_load_block7 equal item_in_unit item5
+
+        take_item_from_core7:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit7_end always
+
+        drop_item_to_load_block7:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit7_end always
+
+        unit7_end:
+            jump main_part_end unit_amount lessThan 8
+
+    unit8_control:
+        ubind unit8
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block8 equal item_in_unit item
+            jump take_item_from_core8 equal item_in_unit false
+
+            sensor item_in_load_block load_block item_in_unit
+            jump take_item_from_core8 greaterThanEq item_in_load_block max_capacity
+
+            jump drop_item_to_load_block8 equal item_in_unit item1
+            jump drop_item_to_load_block8 equal item_in_unit item2
+            jump drop_item_to_load_block8 equal item_in_unit item3
+            jump drop_item_to_load_block8 equal item_in_unit item4
+            jump drop_item_to_load_block8 equal item_in_unit item5
+
+        take_item_from_core8:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit8_end always
+
+        drop_item_to_load_block8:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit8_end always
+
+        unit8_end:
+
+
+    main_part_end:
+        jump binding always

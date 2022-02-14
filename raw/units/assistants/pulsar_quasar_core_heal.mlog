@@ -1,0 +1,400 @@
+constants:
+    import author
+    import default_mul_bind_constants
+    set pulsar_heal_range 5
+    set quasar_heal_range 7
+    set pulsar_approach_range 8
+    set quasar_approach_range 10
+    set core_check_range 5
+
+flag_def:
+    import flag_def
+
+binding:
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+
+    binding_constants:
+        sensor choice sorter1 @config
+
+        jump free_up_binded_unit equal choice false
+        jump unit1 equal prev_choice choice
+        set prev_choice choice
+
+        is_scrap_shoosen:
+            jump is_silicon_shoosen notEqual choice @scrap
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @quasar
+            set unit_amount 6
+
+            jump free_up_binded_unit always
+
+        is_silicon_shoosen:
+            jump is_plastanium_shoosen notEqual choice @silicon
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @quasar
+            set unit_type_10_12 @quasar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_plastanium_shoosen:
+            jump is_phase_fabric_shoosen notEqual choice @plastanium
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @pulsar
+            set unit_type_10_12 @quasar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_phase_fabric_shoosen:
+            jump is_copper_shoosen notEqual choice @phase-fabric
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_type_7_9 @quasar
+            set unit_type_10_12 @pulsar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_copper_shoosen:
+            jump is_lead_shoosen notEqual choice @copper
+
+            set unit_type_1_3 @pulsar
+            set unit_amount 3
+
+            jump free_up_binded_unit always
+        
+        is_lead_shoosen:
+            jump is_metaglass_shoosen notEqual choice @lead
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_amount 6
+
+            jump free_up_binded_unit always
+
+        is_metaglass_shoosen:
+            jump is_graphite_shoosen notEqual choice @metaglass
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @pulsar
+            set unit_amount 9
+
+            jump free_up_binded_unit always
+
+        is_graphite_shoosen:
+            jump is_sand_shoosen notEqual choice @graphite
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @pulsar
+            set unit_type_10_12 @pulsar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_sand_shoosen:
+            jump is_coal_shoosen notEqual choice @sand
+
+            set unit_type_1_3 @quasar
+            set unit_amount 3
+
+            jump free_up_binded_unit always
+
+        is_coal_shoosen:
+            jump is_titanium_shoosen notEqual choice @coal
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_amount 6
+
+            jump free_up_binded_unit always
+
+        is_titanium_shoosen:
+            jump is_thorium_shoosen notEqual choice @titanium
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_type_7_9 @quasar
+            set unit_amount 9
+
+            jump free_up_binded_unit always
+
+        is_thorium_shoosen:
+            jump unexpected_choice notEqual choice @thorium
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_type_7_9 @quasar
+            set unit_type_10_12 @quasar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+            
+        unexpected_choice:
+            set unit_type_1_3 false
+            set unit_amount 0
+            jump free_up_binded_unit always
+
+    unit1:
+        set unit_type unit_type_1_3
+        unit1_is_binding_needed:
+        import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
+
+    unit2:
+        unit2_is_binding_needed:
+        import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
+    
+    unit3:
+        unit3_is_binding_needed:
+        import unit_check_and_bind(<unit> = 3, <next_unit> = 4)
+
+    unit4:
+        set unit_type unit_type_4_6
+        unit4_is_binding_needed:
+        import unit_check_and_bind(<unit> = 4, <next_unit> = 5)
+
+    unit5:
+        unit5_is_binding_needed:
+        import unit_check_and_bind(<unit> = 5, <next_unit> = 6)
+
+    unit6:
+        unit6_is_binding_needed:
+        import unit_check_and_bind(<unit> = 6, <next_unit> = 7)
+
+    unit7:
+        set unit_type unit_type_7_9
+        unit7_is_binding_needed:
+        import unit_check_and_bind(<unit> = 7, <next_unit> = 8)
+
+    unit8:
+        unit8_is_binding_needed:
+        import unit_check_and_bind(<unit> = 8, <next_unit> = 9)
+
+    unit9:
+        unit9_is_binding_needed:
+        import unit_check_and_bind(<unit> = 9, <next_unit> = 10)
+
+    unit10:
+        set unit_type unit_type_10_12
+        unit10_is_binding_needed:
+        import unit_check_and_bind(<unit> = 10, <next_unit> = 11)
+
+    unit11:
+        unit11_is_binding_needed:
+        import unit_check_and_bind(<unit> = 11, <next_unit> = 12)
+
+    unit12:
+        unit12_is_binding_needed:
+        import last_unit_check_and_bind(<unit> = 12)
+    
+    free_up_binded_unit:
+        free_1_12:
+           import free_up_unit(<unit> = 1)
+
+        free_2_12:
+           import free_up_unit(<unit> = 2)
+
+        free_3_12:
+           import free_up_unit(<unit> = 3)
+
+        free_4_12:
+           import free_up_unit(<unit> = 4)
+
+        free_5_12:
+           import free_up_unit(<unit> = 5)
+
+        free_6_12:
+           import free_up_unit(<unit> = 6)
+
+        free_7_12:
+           import free_up_unit(<unit> = 7)
+
+        free_8_12:
+           import free_up_unit(<unit> = 8)
+
+        free_9_12:
+           import free_up_unit(<unit> = 9)
+
+        free_10_12:
+           import free_up_unit(<unit> = 10)
+
+        free_11_12:
+           import free_up_unit(<unit> = 11)
+
+        free_12_12:
+           import free_up_unit(<unit> = 12)
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    sensor core_dead core @dead
+    jump unit1_control equal core_dead false
+    set core false
+
+    unit1_control:
+        ubind unit1
+        set unit_number 1
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit2_control:
+        ubind unit2
+        set unit_number 2
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+
+    unit3_control:
+        ubind unit3
+        set unit_number 3
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit4_control:
+        ubind unit4
+        set unit_number 4
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit5_control:
+        ubind unit5
+        set unit_number 5
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit6_control:
+        ubind unit6
+        set unit_number 6
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit7_control:
+        ubind unit7
+        set unit_number 7
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit8_control:
+        ubind unit8
+        set unit_number 8
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit9_control:
+        ubind unit9
+        set unit_number 9
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit10_control:
+        ubind unit10
+        set unit_number 10
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit11_control:
+        ubind unit11
+        set unit_number 11
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit12_control:
+        ubind unit12
+        set unit_number 12
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    main_part_end:
+        jump binding always
+
+    unit_task:
+        sensor unit_type unit @type
+
+        set approach_range pulsar_approach_range
+        set heal_range pulsar_heal_range
+
+        jump is_know_core equal unit_type pulsar
+
+        set approach_range quasar_approach_range
+        set heal_range quasar_heal_range
+
+        is_know_core:
+            jump unit_go_to_processor equal core false
+            jump unit_go_to_core always
+
+        unit_go_to_processor:
+            ucontrol boost true
+            ucontrol move @thisx @thisy
+            ucontrol within @thisx @thisy core_check_range near_processor
+
+            jump unit_get_core equal near_processor true
+            jump unit_end always
+
+        unit_get_core:
+            ulocate building core false i_love_you corex corey coref core
+            jump unit_end always
+
+        unit_go_to_core:
+            unit_is_near_core:
+                ucontrol within corex corey approach_range near_core
+                sensor is_boosted @unit @boosting
+                jump unit_boosted equal is_boosted true
+
+                unit_unboosted:
+                    jump unit_heal_core equal near_core true
+
+                    ucontrol boost true
+                    ucontrol move corex corey
+
+                    jump unit_end always
+                
+                unit_boosted:
+                    jump flying_cycle equal near_core true
+
+                    set timer @time
+
+                    flying_cycle:
+                        op sub cycle_range approach_range 1
+
+                        op idiv dt @time 40
+                        op idiv du 360 unit_amount
+                        op mul du du unit_number
+                        op add dtdu dt du
+                        op mod angle dtdu 360
+                        op cos cos angle b
+                        op sin sin angle b
+                        op mul dx cos cycle_range
+                        op mul dy sin cycle_range
+                        op add targetx corex dx
+                        op add targety corey dy
+
+                        ucontrol move targetx targety
+
+                        op add end_cycle_time timer 2000
+
+                        jump unit_end lessThan @time end_cycle_time
+                        ucontrol boost false
+                        jump unit_end always
+            
+            unit_heal_core:
+                ucontrol boost false
+                ucontrol approach corex corey heal_range
+
+                ucontrol target corex corey true
+
+                jump unit_end
+
+        unit_end:
+            set @counter counter

@@ -1,0 +1,52 @@
+constants:
+    import author
+    set unit_type @flare
+
+leader:
+    import leader
+
+main_part:
+    ubind unit_type
+    sensor controller @unit @controller
+    jump check_mode equal controller @unit
+    sensor unit_flag @unit @flag
+    jump main_part greaterThan unit_flag 0
+
+    check_mode:
+        ucontrol flag 0 
+        sensor mode sorter1 @config
+        jump rally equal mode false
+
+    attack:
+        sensor shooting leader @shooting
+        sensor shootX leader @shootX
+        sensor shootY leader @shootY
+        jump attack_suicide equal shooting 1
+
+        attack_default:
+            ucontrol approach shootX shootY 13
+            ucontrol target shootX shootY 1
+            jump leader always
+        attack_suicide:
+            ucontrol approach shootX shootY 1
+            ucontrol target shootX shootY 1
+
+        attack_end:
+            jump leader always
+
+    rally:
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_core notEqual item_in_unit false
+
+        go_to_processor:
+            ucontrol approach @thisx @thisy 9
+            jump leader always
+
+        drop_item_to_core:
+            ulocate building core false i_love_you corex corey coref core
+            ucontrol move corex corey
+            ucontrol itemDrop core 999
+
+        rally_end:
+            jump leader always

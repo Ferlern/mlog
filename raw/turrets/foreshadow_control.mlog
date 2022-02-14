@@ -1,0 +1,20 @@
+radar enemy any any maxHealth foreshadow1 1 enemy
+jump enemy_exists notEqual enemy false
+control enabled foreshadow1 0
+control enabled <od_block> 0
+
+jump foreshadow_control_end always
+
+enemy_exists:
+    sensor h enemy @maxHealth
+    jump enemy_strong_enough greaterThan h 500
+    control enabled foreshadow1 0
+    control enabled <od_block> 0
+
+jump foreshadow_control_end always
+
+enemy_strong_enough:
+    control enabled foreshadow1 1
+    control enabled <od_block> 1
+
+foreshadow_control_end:

@@ -1,0 +1,2 @@
+op mul mx @thisx 1000
+op add flag mx @thisy

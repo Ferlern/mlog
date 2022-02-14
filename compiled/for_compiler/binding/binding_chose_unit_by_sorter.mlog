@@ -1,0 +1,20 @@
+sensor choice sorter1 @config
+
+jump free_up_binded_unit equal choice false
+jump unit1 equal prev_choice choice
+set prev_choice choice
+
+set unit_type @flare
+jump free_up_binded_unit equal choice @copper
+
+set unit_type @mono
+jump free_up_binded_unit equal choice @lead
+
+set unit_type @horizon
+jump free_up_binded_unit equal choice @metaglass
+
+set unit_type @atrax
+jump free_up_binded_unit equal choice @graphite
+
+set unit_type false
+jump free_up_binded_unit always

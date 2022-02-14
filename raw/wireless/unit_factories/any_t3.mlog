@@ -1,0 +1,365 @@
+constants:
+    import author
+    import default_mul_bind_constants
+    set unit_amount 8
+
+flag_def:
+    import flag_def
+
+binding:
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+        sensor timescale reconstructor2 @timescale
+
+    binding_constants:
+        import binding_chose_unit_by_sorter
+
+    unit1:
+        unit1_is_binding_needed:
+        import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
+
+    unit2:
+        unit2_is_binding_needed:
+        import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
+    
+    unit3:
+        unit3_is_binding_needed:
+        import unit_check_and_bind(<unit> = 3, <next_unit> = 4)
+
+    unit4:
+        unit4_is_binding_needed:
+            jump free_4_8 lessThan timescale 1.4
+
+        import unit_check_and_bind(<unit> = 4, <next_unit> = 5)
+
+    unit5:
+        unit5_is_binding_needed:
+        import unit_check_and_bind(<unit> = 5, <next_unit> = 6)
+
+    unit6:
+        unit6_is_binding_needed:
+            jump free_6_8 lessThan timescale 2.15
+
+        import unit_check_and_bind(<unit> = 6, <next_unit> = 7)
+
+    unit7:
+        unit7_is_binding_needed:
+        import unit_check_and_bind(<unit> = 7, <next_unit> = 8)
+
+    unit8:
+        unit8_is_binding_needed:
+            jump free_8_8 lessThan timescale 3
+
+        import last_unit_check_and_bind(<unit> = 8)
+    
+    free_up_binded_unit:
+        free_1_8:
+           import free_up_unit(<unit> = 1)
+
+        free_2_8:
+           import free_up_unit(<unit> = 2)
+
+        free_3_8:
+           import free_up_unit(<unit> = 3)
+
+        free_4_8:
+           import free_up_unit(<unit> = 4)
+           
+        free_5_8:
+           import free_up_unit(<unit> = 5)
+           
+        free_6_8:
+           import free_up_unit(<unit> = 6)
+           
+        free_7_8:
+           import free_up_unit(<unit> = 7)
+           
+        free_8_8:
+           import free_up_unit(<unit> = 8)
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    select_main_item:
+        sensor total_graph reconstructor1 @graphite
+        sensor total_glass reconstructor2 @metaglass
+        sensor total_titanium reconstructor2 @titanium
+
+        sensor factory1_config factory1 @config
+
+        jump grathite_chain equal factory1_config @flare
+
+        factory1_config_mono:
+            jump factory1_config_dagger notEqual factory1_config @mono
+            jump mono_chain always
+ 
+        factory1_config_dagger:
+            jump factory1_config_nova notEqual factory1_config @dagger
+            jump dagger_chain always
+
+        factory1_config_nova:
+            jump factory1_config_crawler notEqual factory1_config @nova
+            jump nova_chain always
+
+        factory1_config_crawler:
+            jump factory1_config_risso notEqual factory1_config @crawler
+            jump crawler_chain always
+
+        factory1_config_risso:
+            jump grathite_chain notEqual factory1_config @risso
+            jump risso_chain always
+
+        mono_chain:
+            sensor lead_in_first_factory factory1 @lead
+            sensor lead_in_second_factory factory2 @lead
+            op add total_lead lead_in_first_factory lead_in_second_factory 
+            jump grathite_chain greaterThanEq total_lead 60
+
+            set item1 @lead
+            set item2 @graphite
+            set item3 @titanium
+            jump select_main_item_end always
+
+        dagger_chain:
+            sensor total_lead factory1 @lead
+            jump grathite_chain greaterThanEq total_lead 40
+
+            set item1 @lead
+            set item2 @graphite
+            set item3 @titanium
+            jump select_main_item_end always
+
+        nova_chain:
+            sensor lead_in_first_factory factory1 @lead
+            sensor titanium_in_first_factory factory1 @titanium
+            sensor lead_in_second_factory factory2 @lead
+            sensor titanium_in_second_factory factory2 @titanium
+
+            op add total_lead lead_in_first_factory lead_in_second_factory 
+            op add total_titanium titanium_in_first_factory titanium_in_second_factory 
+            jump nova_titanium_chain greaterThanEq total_lead 80
+
+            nova_lead_chain:
+                set item1 @lead
+                set item2 @graphite
+                set item3 @metaglass
+                jump select_main_item_end always
+
+            nova_titanium_chain:
+                jump grathite_chain greaterThanEq total_titanium 80
+                set item1 @titanium
+                set item2 @graphite
+                set item3 @metaglass
+                jump select_main_item_end always
+
+        crawler_chain:
+            sensor total_coal factory1 @coal
+            jump grathite_chain greaterThanEq total_coal 40
+
+            set item1 @coal
+            set item2 @graphite
+            set item3 @titanium
+            jump select_main_item_end always
+
+        risso_chain:
+            sensor metaglass_in_first_factory factory1 @metaglass
+            sensor metaglass_in_second_factory factory2 @metaglass
+            op add total_metaglass metaglass_in_first_factory metaglass_in_second_factory 
+            jump grathite_chain greaterThanEq total_metaglass 140
+
+            set item1 @metaglass
+            set item2 @graphite
+            set item3 @titanium
+            jump select_main_item_end always
+
+        grathite_chain:
+            jump glass_chain greaterThanEq total_graph 80
+
+        
+            set item1 @graphite
+            set item2 @titanium
+            set item3 @metaglass
+            jump select_main_item_end always
+        
+        glass_chain:
+            jump titanium_chain greaterThanEq total_glass 80
+
+            set item1 @metaglass
+            set item2 @titanium
+            set item3 @silicon
+            jump select_main_item_end always
+
+        titanium_chain:
+            jump silicon_chain greaterThanEq total_titanium 160
+
+        
+            set item1 @titanium
+            set item2 @silicon
+            set item3 @silicon
+            jump select_main_item_end always
+
+        silicon_chain:
+            set item1 @silicon
+            set item2 @silicon
+            set item3 @silicon
+            jump select_main_item_end always
+
+        select_main_item_end:
+        
+
+    unit1_control:
+        ubind unit1
+        ulocate building core false i_love_you corex corey coref core
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block1 equal item_in_unit @silicon
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core @silicon 999
+            ucontrol itemDrop core 999
+            jump unit2_control always
+
+        drop_item_to_load_block1:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop reconstructor2 999
+
+    unit2_control:
+        ubind unit2
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block2 equal item_in_unit item1
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item1 999
+            ucontrol itemDrop core 999
+            jump unit3_control always
+
+        drop_item_to_load_block2:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop reconstructor2 999
+
+    unit3_control:
+        ubind unit3
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block3 equal item_in_unit item1
+            jump drop_item_to_load_block3 equal item_in_unit item2
+            jump drop_item_to_load_block3 equal item_in_unit item3
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item1 999
+            ucontrol itemDrop core 999
+            jump unit4_control always
+
+        drop_item_to_load_block3:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop reconstructor2 999
+
+    unit4_control:
+        ubind unit4
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block4 equal item_in_unit @silicon
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core @silicon 999
+            ucontrol itemDrop core 999
+            jump unit5_control always
+
+        drop_item_to_load_block4:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop reconstructor2 999
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+
+    unit5_control:
+        ubind unit5
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block5 equal item_in_unit item1
+            jump drop_item_to_load_block5 equal item_in_unit item2
+            jump drop_item_to_load_block5 equal item_in_unit item3
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item2 999
+            ucontrol itemDrop core 999
+            jump unit6_control always
+
+        drop_item_to_load_block5:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop reconstructor2 999
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+
+    unit6_control:
+        ubind unit6
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block6 equal item_in_unit @silicon
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core @silicon 999
+            ucontrol itemDrop core 999
+            jump unit7_control always
+
+        drop_item_to_load_block6:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop reconstructor2 999
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+
+    unit7_control:
+        ubind unit7
+
+        check_is_have_item:
+            sensor item_in_unit @unit @firstItem
+            jump drop_item_to_load_block7 equal item_in_unit item1
+            jump drop_item_to_load_block7 equal item_in_unit item2
+            jump drop_item_to_load_block7 equal item_in_unit item3
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item2 999
+            ucontrol itemDrop core 999
+            jump unit8_control always
+
+        drop_item_to_load_block7:
+            ucontrol move @thisx @thisy
+            ucontrol itemDrop reconstructor1 999
+            ucontrol itemDrop reconstructor2 999
+            ucontrol itemDrop factory1 999
+            ucontrol itemDrop factory2 999
+
+    unit8_control:
+        ubind unit8
+        ucontrol move @thisx @thisy
+
+    main_part_end:
+        jump binding always

@@ -1,0 +1,74 @@
+constants:
+    set creator "[SG] Визя"
+    set retreat_health_percent 0.6
+    set item @blast-compound
+
+change_leader:
+    control configure sorter1 @sand
+    set leader false
+
+leader:
+    check_leader:
+        sensor unit_dead leader @dead
+        jump bind_leader notEqual unit_dead false
+        jump leader_end always
+    
+    bind_leader:
+        ubind @gamma
+        jump set_leader notEqual @unit false
+        ubind @beta
+        jump set_leader notEqual @unit false
+        ubind @alpha
+        jump set_leader notEqual @unit false
+        jump leader_end always
+    
+    set_leader:
+        set leader @unit
+    
+    leader_end:
+
+main_part:
+    sensor mode sorter1 @config
+    jump change_leader equal mode @scrap
+
+    set_leader_position:
+        sensor leader_x leader @x
+        sensor leader_y leader @y
+        sensor shooting leader @shooting
+        sensor shootX leader @shootX
+        sensor shootY leader @shootY
+
+    quad_control:
+        ubind @quad
+        jump heal equal mode false
+        jump heal equal leader false
+        jump to_player equal shooting 1
+
+        sensor health @unit @health
+        sensor maxHealth @unit @maxHealth
+        sensor flag @unit @flag
+
+        op div current_percent health maxHealth
+        jump prev_heal notEqual flag false
+
+        prev_to_player:
+            jump to_player greaterThanEq current_percent retreat_health_percent
+            jump heal always
+        prev_heal:
+            jump to_player greaterThanEq current_percent 1
+            jump heal always
+
+    to_player:
+        ucontrol flag 0
+        ucontrol move shootX shootY
+        ucontrol targetp @unit 1
+        ucontrol getBlock shootX shootY 0 block_with_items
+        ucontrol itemTake block_with_items item 999
+        jump leader always
+
+    heal:
+        ucontrol flag 1
+        ulocate building repair false i_love_you hx hy hf h
+        ucontrol move hx hy
+        ucontrol targetp @unit 0
+        jump leader always

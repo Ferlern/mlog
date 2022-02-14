@@ -1,0 +1,2 @@
+set attempt_amount 5
+set time_between_bind 3000

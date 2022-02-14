@@ -1,0 +1,820 @@
+constants:
+    set creator "[SG] Визя"
+    set attempt_amount 5
+    set time_between_bind 3000
+    set pulsar_heal_range 5
+    set quasar_heal_range 7
+    set pulsar_approach_range 8
+    set quasar_approach_range 10
+    set core_check_range 5
+
+flag_def:
+    op mul mx @thisx 1000
+    op add flag mx @thisy
+
+binding:
+    is_binding_needed:
+        op sub timer @time time_between_bind
+        jump main_part greaterThan last_time timer
+
+    binding_constants:
+        sensor choice sorter1 @config
+
+        jump free_up_binded_unit equal choice false
+        jump unit1 equal prev_choice choice
+        set prev_choice choice
+
+        is_scrap_shoosen:
+            jump is_silicon_shoosen notEqual choice @scrap
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @quasar
+            set unit_amount 6
+
+            jump free_up_binded_unit always
+
+        is_silicon_shoosen:
+            jump is_plastanium_shoosen notEqual choice @silicon
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @quasar
+            set unit_type_10_12 @quasar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_plastanium_shoosen:
+            jump is_phase_fabric_shoosen notEqual choice @plastanium
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @pulsar
+            set unit_type_10_12 @quasar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_phase_fabric_shoosen:
+            jump is_copper_shoosen notEqual choice @phase-fabric
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_type_7_9 @quasar
+            set unit_type_10_12 @pulsar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_copper_shoosen:
+            jump is_lead_shoosen notEqual choice @copper
+
+            set unit_type_1_3 @pulsar
+            set unit_amount 3
+
+            jump free_up_binded_unit always
+        
+        is_lead_shoosen:
+            jump is_metaglass_shoosen notEqual choice @lead
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_amount 6
+
+            jump free_up_binded_unit always
+
+        is_metaglass_shoosen:
+            jump is_graphite_shoosen notEqual choice @metaglass
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @pulsar
+            set unit_amount 9
+
+            jump free_up_binded_unit always
+
+        is_graphite_shoosen:
+            jump is_sand_shoosen notEqual choice @graphite
+
+            set unit_type_1_3 @pulsar
+            set unit_type_4_6 @pulsar
+            set unit_type_7_9 @pulsar
+            set unit_type_10_12 @pulsar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+
+        is_sand_shoosen:
+            jump is_coal_shoosen notEqual choice @sand
+
+            set unit_type_1_3 @quasar
+            set unit_amount 3
+
+            jump free_up_binded_unit always
+
+        is_coal_shoosen:
+            jump is_titanium_shoosen notEqual choice @coal
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_amount 6
+
+            jump free_up_binded_unit always
+
+        is_titanium_shoosen:
+            jump is_thorium_shoosen notEqual choice @titanium
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_type_7_9 @quasar
+            set unit_amount 9
+
+            jump free_up_binded_unit always
+
+        is_thorium_shoosen:
+            jump unexpected_choice notEqual choice @thorium
+
+            set unit_type_1_3 @quasar
+            set unit_type_4_6 @quasar
+            set unit_type_7_9 @quasar
+            set unit_type_10_12 @quasar
+            set unit_amount 12
+
+            jump free_up_binded_unit always
+            
+        unexpected_choice:
+            set unit_type_1_3 false
+            set unit_amount 0
+            jump free_up_binded_unit always
+
+    unit1:
+        set unit_type unit_type_1_3
+        unit1_is_binding_needed:
+        unit1_check:
+            sensor unit_dead unit1 @dead
+            jump unit1_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit1 @flag
+            jump unit1_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit2 greaterThan unit_amount 1
+                jump binding_end always
+        
+        unit1_set_attempt_var:
+            set unit1 false
+            set attempt 0
+        
+        unit1_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit1_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit1_bind greaterThan unit_flag 0
+        
+            unit1_bind_bind:
+                set unit1 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit2 greaterThan unit_amount 1
+                    jump binding_end always
+
+    unit2:
+        unit2_is_binding_needed:
+        unit2_check:
+            sensor unit_dead unit2 @dead
+            jump unit2_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit2 @flag
+            jump unit2_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit3 greaterThan unit_amount 2
+                jump binding_end always
+        
+        unit2_set_attempt_var:
+            set unit2 false
+            set attempt 0
+        
+        unit2_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit2_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit2_bind greaterThan unit_flag 0
+        
+            unit2_bind_bind:
+                set unit2 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit3 greaterThan unit_amount 2
+                    jump binding_end always
+    
+    unit3:
+        unit3_is_binding_needed:
+        unit3_check:
+            sensor unit_dead unit3 @dead
+            jump unit3_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit3 @flag
+            jump unit3_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit4 greaterThan unit_amount 3
+                jump binding_end always
+        
+        unit3_set_attempt_var:
+            set unit3 false
+            set attempt 0
+        
+        unit3_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit3_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit3_bind greaterThan unit_flag 0
+        
+            unit3_bind_bind:
+                set unit3 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit4 greaterThan unit_amount 3
+                    jump binding_end always
+
+    unit4:
+        set unit_type unit_type_4_6
+        unit4_is_binding_needed:
+        unit4_check:
+            sensor unit_dead unit4 @dead
+            jump unit4_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit4 @flag
+            jump unit4_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit5 greaterThan unit_amount 4
+                jump binding_end always
+        
+        unit4_set_attempt_var:
+            set unit4 false
+            set attempt 0
+        
+        unit4_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit4_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit4_bind greaterThan unit_flag 0
+        
+            unit4_bind_bind:
+                set unit4 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit5 greaterThan unit_amount 4
+                    jump binding_end always
+
+    unit5:
+        unit5_is_binding_needed:
+        unit5_check:
+            sensor unit_dead unit5 @dead
+            jump unit5_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit5 @flag
+            jump unit5_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit6 greaterThan unit_amount 5
+                jump binding_end always
+        
+        unit5_set_attempt_var:
+            set unit5 false
+            set attempt 0
+        
+        unit5_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit5_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit5_bind greaterThan unit_flag 0
+        
+            unit5_bind_bind:
+                set unit5 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit6 greaterThan unit_amount 5
+                    jump binding_end always
+
+    unit6:
+        unit6_is_binding_needed:
+        unit6_check:
+            sensor unit_dead unit6 @dead
+            jump unit6_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit6 @flag
+            jump unit6_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit7 greaterThan unit_amount 6
+                jump binding_end always
+        
+        unit6_set_attempt_var:
+            set unit6 false
+            set attempt 0
+        
+        unit6_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit6_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit6_bind greaterThan unit_flag 0
+        
+            unit6_bind_bind:
+                set unit6 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit7 greaterThan unit_amount 6
+                    jump binding_end always
+
+    unit7:
+        set unit_type unit_type_7_9
+        unit7_is_binding_needed:
+        unit7_check:
+            sensor unit_dead unit7 @dead
+            jump unit7_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit7 @flag
+            jump unit7_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit8 greaterThan unit_amount 7
+                jump binding_end always
+        
+        unit7_set_attempt_var:
+            set unit7 false
+            set attempt 0
+        
+        unit7_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit7_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit7_bind greaterThan unit_flag 0
+        
+            unit7_bind_bind:
+                set unit7 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit8 greaterThan unit_amount 7
+                    jump binding_end always
+
+    unit8:
+        unit8_is_binding_needed:
+        unit8_check:
+            sensor unit_dead unit8 @dead
+            jump unit8_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit8 @flag
+            jump unit8_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit9 greaterThan unit_amount 8
+                jump binding_end always
+        
+        unit8_set_attempt_var:
+            set unit8 false
+            set attempt 0
+        
+        unit8_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit8_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit8_bind greaterThan unit_flag 0
+        
+            unit8_bind_bind:
+                set unit8 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit9 greaterThan unit_amount 8
+                    jump binding_end always
+
+    unit9:
+        unit9_is_binding_needed:
+        unit9_check:
+            sensor unit_dead unit9 @dead
+            jump unit9_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit9 @flag
+            jump unit9_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit10 greaterThan unit_amount 9
+                jump binding_end always
+        
+        unit9_set_attempt_var:
+            set unit9 false
+            set attempt 0
+        
+        unit9_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit9_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit9_bind greaterThan unit_flag 0
+        
+            unit9_bind_bind:
+                set unit9 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit10 greaterThan unit_amount 9
+                    jump binding_end always
+
+    unit10:
+        set unit_type unit_type_10_12
+        unit10_is_binding_needed:
+        unit10_check:
+            sensor unit_dead unit10 @dead
+            jump unit10_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit10 @flag
+            jump unit10_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit11 greaterThan unit_amount 10
+                jump binding_end always
+        
+        unit10_set_attempt_var:
+            set unit10 false
+            set attempt 0
+        
+        unit10_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit10_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit10_bind greaterThan unit_flag 0
+        
+            unit10_bind_bind:
+                set unit10 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit11 greaterThan unit_amount 10
+                    jump binding_end always
+
+    unit11:
+        unit11_is_binding_needed:
+        unit11_check:
+            sensor unit_dead unit11 @dead
+            jump unit11_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit11 @flag
+            jump unit11_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump unit12 greaterThan unit_amount 11
+                jump binding_end always
+        
+        unit11_set_attempt_var:
+            set unit11 false
+            set attempt 0
+        
+        unit11_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit11_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit11_bind greaterThan unit_flag 0
+        
+            unit11_bind_bind:
+                set unit11 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump unit12 greaterThan unit_amount 11
+                    jump binding_end always
+
+    unit12:
+        unit12_is_binding_needed:
+        unit12_check:
+            sensor unit_dead unit12 @dead
+            jump unit12_set_attempt_var notEqual unit_dead false
+            sensor unit_flag unit12 @flag
+            jump unit12_set_attempt_var notEqual flag unit_flag
+        
+            checked_successfully:
+                jump binding_end always
+        
+        unit12_set_attempt_var:
+            set unit12 false
+            set attempt 0
+        
+        unit12_bind:
+        
+            ubind unit_type
+            op add attempt attempt 1
+            jump binding_end greaterThan attempt attempt_amount
+        
+            unit_bind_check:
+                sensor controller @unit @controller
+                jump unit12_bind_bind equal controller @unit
+                sensor unit_flag @unit @flag
+                jump unit12_bind greaterThan unit_flag 0
+        
+            unit12_bind_bind:
+                set unit12 @unit
+                ucontrol flag flag
+        
+                binded_successfully:
+                    jump binding_end always
+    
+    free_up_binded_unit:
+        free_1_12:
+           ubind unit1
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit1 false
+
+        free_2_12:
+           ubind unit2
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit2 false
+
+        free_3_12:
+           ubind unit3
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit3 false
+
+        free_4_12:
+           ubind unit4
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit4 false
+
+        free_5_12:
+           ubind unit5
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit5 false
+
+        free_6_12:
+           ubind unit6
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit6 false
+
+        free_7_12:
+           ubind unit7
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit7 false
+
+        free_8_12:
+           ubind unit8
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit8 false
+
+        free_9_12:
+           ubind unit9
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit9 false
+
+        free_10_12:
+           ubind unit10
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit10 false
+
+        free_11_12:
+           ubind unit11
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit11 false
+
+        free_12_12:
+           ubind unit12
+           jump binding_end equal @unit 0
+           ucontrol flag 0
+           set unit12 false
+
+    binding_end:
+        set last_time @time
+        jump main_part always
+
+main_part:
+    sensor core_dead core @dead
+    jump unit1_control equal core_dead false
+    set core false
+
+    unit1_control:
+        ubind unit1
+        set unit_number 1
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit2_control:
+        ubind unit2
+        set unit_number 2
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+
+    unit3_control:
+        ubind unit3
+        set unit_number 3
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit4_control:
+        ubind unit4
+        set unit_number 4
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit5_control:
+        ubind unit5
+        set unit_number 5
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit6_control:
+        ubind unit6
+        set unit_number 6
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit7_control:
+        ubind unit7
+        set unit_number 7
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit8_control:
+        ubind unit8
+        set unit_number 8
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit9_control:
+        ubind unit9
+        set unit_number 9
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit10_control:
+        ubind unit10
+        set unit_number 10
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit11_control:
+        ubind unit11
+        set unit_number 11
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    unit12_control:
+        ubind unit12
+        set unit_number 12
+        op add counter @counter 1
+        jump unit_task notEqual @unit false
+
+    main_part_end:
+        jump binding always
+
+    unit_task:
+        sensor unit_type unit @type
+
+        set approach_range pulsar_approach_range
+        set heal_range pulsar_heal_range
+
+        jump is_know_core equal unit_type pulsar
+
+        set approach_range quasar_approach_range
+        set heal_range quasar_heal_range
+
+        is_know_core:
+            jump unit_go_to_processor equal core false
+            jump unit_go_to_core always
+
+        unit_go_to_processor:
+            ucontrol boost true
+            ucontrol move @thisx @thisy
+            ucontrol within @thisx @thisy core_check_range near_processor
+
+            jump unit_get_core equal near_processor true
+            jump unit_end always
+
+        unit_get_core:
+            ulocate building core false i_love_you corex corey coref core
+            jump unit_end always
+
+        unit_go_to_core:
+            unit_is_near_core:
+                ucontrol within corex corey approach_range near_core
+                sensor is_boosted @unit @boosting
+                jump unit_boosted equal is_boosted true
+
+                unit_unboosted:
+                    jump unit_heal_core equal near_core true
+
+                    ucontrol boost true
+                    ucontrol move corex corey
+
+                    jump unit_end always
+                
+                unit_boosted:
+                    jump flying_cycle equal near_core true
+
+                    set timer @time
+
+                    flying_cycle:
+                        op sub cycle_range approach_range 1
+
+                        op idiv dt @time 40
+                        op idiv du 360 unit_amount
+                        op mul du du unit_number
+                        op add dtdu dt du
+                        op mod angle dtdu 360
+                        op cos cos angle b
+                        op sin sin angle b
+                        op mul dx cos cycle_range
+                        op mul dy sin cycle_range
+                        op add targetx corex dx
+                        op add targety corey dy
+
+                        ucontrol move targetx targety
+
+                        op add end_cycle_time timer 2000
+
+                        jump unit_end lessThan @time end_cycle_time
+                        ucontrol boost false
+                        jump unit_end always
+            
+            unit_heal_core:
+                ucontrol boost false
+                ucontrol approach corex corey heal_range
+
+                ucontrol target corex corey true
+
+                jump unit_end
+
+        unit_end:
+            set @counter counter
