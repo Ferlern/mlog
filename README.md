@@ -22,4 +22,4 @@ import <file> (<var1> = <value1>,
                <var2> = <value2>, 
                ...)
 ```
-with the contents of <file>, replacing all <var> with its value
+with the contents of `file`, replacing all `var` with its value
