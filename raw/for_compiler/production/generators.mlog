@@ -1,0 +1,36 @@
+get_generator:
+    getlink target generator_i
+    sensor cur_energy target @powerNetStored
+    sensor cur_<liquid> target @<liquid>
+    sensor max_energy target @powerNetCapacity
+    sensor max_<liquid> target @liquidCapacity
+
+not_generator:
+    jump generators_end equal max_energy 0
+
+check_generator:
+    op div energy cur_energy max_energy
+    op div <liquid> cur_<liquid> max_<liquid>
+    op lessThan energy_ready energy 0.9
+    op greaterThan <liquid>_ready <liquid> 0.2
+    op land ready energy_ready <liquid>_ready
+    jump disable_generator equal ready false
+
+simultaneous_activation:
+    sensor is_generator_enabled target @enabled
+    jump generators_end equal is_generator_enabled true
+
+    jump enable_generator greaterThanEq <liquid> 0.8
+    op mod gen_timer @time 14000
+    jump enable_generator greaterThanEq gen_timer 10000
+
+disable_generator:
+    control enabled target 0
+    jump generators_end always
+
+enable_generator:
+    control enabled target 1
+
+generators_end:
+    op add generator_i generator_i 1
+    op mod generator_i generator_i @links

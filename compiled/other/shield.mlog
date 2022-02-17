@@ -1,0 +1,21 @@
+constants:
+    set creator "[SG] Визя"
+
+projector_is_enemy_exist:
+    radar enemy any any distance hail1 1 enemy
+    jump disable_projector equal enemy false
+
+projector_check:
+    sensor heat projector1 @heat
+    op mod projector_timer @time 80
+    op div heat heat 10
+    jump enable_projector greaterThanEq projector_timer heat
+
+disable_projector:
+    control enabled projector1 0
+    jump projector_end always
+
+enable_projector:
+    control enabled projector1 1
+
+projector_end:

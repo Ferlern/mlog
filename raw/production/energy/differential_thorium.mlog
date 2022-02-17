@@ -1,0 +1,5 @@
+constants:
+    import author
+
+generators:
+    import generators(<liquid> = cryofluid)
