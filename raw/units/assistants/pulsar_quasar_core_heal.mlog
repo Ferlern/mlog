@@ -1,11 +1,14 @@
 constants:
     import author
-    import default_mul_bind_constants
     set pulsar_heal_range 5
     set quasar_heal_range 7
-    set pulsar_approach_range 8
-    set quasar_approach_range 10
+    
+    print "[!!!] Don't change next variables"
+    import default_mul_bind_constants
     set core_check_range 5
+    set approach_range 8
+    op add pulsar_check_range pulsar_heal_range 3
+    op add quasar_check_range quasar_heal_range 3
 
 flag_def:
     import flag_def
@@ -320,15 +323,15 @@ main_part:
         jump binding always
 
     unit_task:
-        sensor unit_type unit @type
+        sensor unit_type @unit @type
 
-        set approach_range pulsar_approach_range
         set heal_range pulsar_heal_range
+        set check_range pulsar_check_range
 
-        jump is_know_core equal unit_type pulsar
+        jump is_know_core equal unit_type @pulsar
 
-        set approach_range quasar_approach_range
         set heal_range quasar_heal_range
+        set check_range quasar_check_range
 
         is_know_core:
             jump unit_go_to_processor equal core false
@@ -348,7 +351,7 @@ main_part:
 
         unit_go_to_core:
             unit_is_near_core:
-                ucontrol within corex corey approach_range near_core
+                ucontrol within corex corey check_range near_core
                 sensor is_boosted @unit @boosting
                 jump unit_boosted equal is_boosted true
 
