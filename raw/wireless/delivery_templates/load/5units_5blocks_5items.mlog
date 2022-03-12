@@ -1,7 +1,7 @@
 constants:
     import author
     import default_mul_bind_constants
-    set unit_amount 1
+    set unit_amount 5
 
     items:
         set item1 @item
@@ -31,7 +31,7 @@ binding:
 
         check_what_item_needed:
             sensor core_dead core @dead
-            jump binding_constants notEqual core_dead false
+            jump no_core notEqual core_dead false
 
             set binding_needed false
             set item1_needed false
@@ -45,228 +45,219 @@ binding:
                 check_is_load_block_exists:
                     jump check_item2 equal block1 false
 
-                set item item1
-                sensor item_in_core core item
+                sensor item_in_core core item1
                 jump check_item2 lessThan item_in_core 50
-                sensor item_in_load_block block1 item
+                sensor item_in_load_block block1 item1
                 jump check_item2 greaterThanEq item_in_load_block item1_amount
 
-                set item1_needed true
-                set binding_needed true
+                ubind unit1
+                set item item1
+                set load_block block1
+                op add counter @counter 1
+                jump check_is_have_item always
 
             check_item2:
 
                 check_is_load_block_exists:
                     jump check_item3 equal block2 false
 
-                set item item2
-                sensor item_in_core core item
+                sensor item_in_core core item2
                 jump check_item3 lessThan item_in_core 50
-                sensor item_in_load_block block2 item
+                sensor item_in_load_block block2 item2
                 jump check_item3 greaterThanEq item_in_load_block item2_amount
 
-                set item2_needed true
-                set binding_needed true
+                ubind unit2
+                set item item2
+                set load_block block2
+                op add counter @counter 1
+                jump check_is_have_item always
 
             check_item3:
 
                 check_is_load_block_exists:
                     jump check_item4 equal block3 false
 
-                set item item3
-                sensor item_in_core core item
+                sensor item_in_core core item3
                 jump check_item4 lessThan item_in_core 50
-                sensor item_in_load_block block3 item
+                sensor item_in_load_block block3 item3
                 jump check_item4 greaterThanEq item_in_load_block item3_amount
 
-                set item3_needed true
-                set binding_needed true
+                ubind unit3
+                set item item3
+                set load_block block3
+                op add counter @counter 1
+                jump check_is_have_item always
 
             check_item4:
 
                 check_is_load_block_exists:
                     jump check_item5 equal block4 false
 
-                set item item4
-                sensor item_in_core core item
+                sensor item_in_core core item4
                 jump check_item5 lessThan item_in_core 50
-                sensor item_in_load_block block4 item
+                sensor item_in_load_block block4 item4
                 jump check_item5 greaterThanEq item_in_load_block item4_amount
 
-                set item4_needed true
-                set binding_needed true
+                ubind unit4
+                set item item4
+                set load_block block4
+                op add counter @counter 1
+                jump check_is_have_item always
 
             check_item5:
 
                 check_is_load_block_exists:
                     jump is_binding_needed_end equal block5 false
 
-                set item item5
-                sensor item_in_core core item
+                sensor item_in_core core item5
                 jump is_binding_needed_end lessThan item_in_core 50
-                sensor item_in_load_block block5 item
+                sensor item_in_load_block block5 item5
                 jump is_binding_needed_end greaterThanEq item_in_load_block item5_amount
 
-                set item5_needed true
-                set binding_needed true
+                ubind unit5
+                set item item5
+                set load_block block5
+                op add counter @counter 1
+                jump check_is_have_item always
 
         is_binding_needed_end:
             jump free_up_binded_unit notEqual binding_needed true
             op sub timer @time time_between_bind
             jump main_part greaterThan last_time timer
 
+        no_core:
+            set binding_needed true
+
+            no_core_1_item:
+                jump no_core_2_item equal item1 false
+                set item1_needed true
+
+            no_core_2_item:
+                jump no_core_3_item equal item2 false
+                set item2_needed true
+
+            no_core_3_item:
+                jump no_core_4_item equal item3 false
+                set item3_needed true
+
+            no_core_4_item:
+                jump no_core_5_item equal item4 false
+                set item4_needed true
+
+            no_core_5_item:
+                jump binding_constants equal item5 false
+                set item5_needed true 
+
+
     binding_constants:
         import binding_chose_unit_by_sorter
 
     unit1:
         unit1_is_binding_needed:
+            jump unit1_check notEqual core_dead false
+            jump unit1_check equal item1_needed true
+            ubind unit1
+            ucontrol flag 0
+            set unit1 false
+            jump unit2 always
+
         import unit_check_and_bind(<unit> = 1, <next_unit> = 2)
 
     unit2:
         unit2_is_binding_needed:
+            jump unit2_check equal item2_needed true
+            ubind unit2
+            ucontrol flag 0
+            set unit2 false
+            jump unit3 always
+
         import unit_check_and_bind(<unit> = 2, <next_unit> = 3)
     
     unit3:
         unit3_is_binding_needed:
+            jump unit3_check equal item3_needed true
+            ubind unit3
+            ucontrol flag 0
+            set unit3 false
+            jump unit4 always
+
         import unit_check_and_bind(<unit> = 3, <next_unit> = 4)
 
     unit4:
         unit4_is_binding_needed:
+            jump unit4_check equal item4_needed true
+            ubind unit4
+            ucontrol flag 0
+            set unit4 false
+            jump unit5 always
+
         import unit_check_and_bind(<unit> = 4, <next_unit> = 5)
 
     unit5:
         unit5_is_binding_needed:
-        import unit_check_and_bind(<unit> = 5, <next_unit> = 6)
+            jump unit5_check equal item5_needed true
+            ubind unit5
+            ucontrol flag 0
+            set unit5 false
+            jump binding_end always
 
-    unit6:
-        unit6_is_binding_needed:
-        import unit_check_and_bind(<unit> = 6, <next_unit> = 7)
-
-    unit7:
-        unit7_is_binding_needed:
-        import unit_check_and_bind(<unit> = 7, <next_unit> = 8)
-
-    unit8:
-        unit8_is_binding_needed:
-        import last_unit_check_and_bind(<unit> = 8)
+        import last_unit_check_and_bind(<unit> = 5)
     
     free_up_binded_unit:
-        free_1_8:
+        free_1_5:
            import free_up_unit(<unit> = 1)
 
-        free_2_8:
+        free_2_5:
            import free_up_unit(<unit> = 2)
 
-        free_3_8:
+        free_3_5:
            import free_up_unit(<unit> = 3)
 
-        free_4_8:
+        free_4_5:
            import free_up_unit(<unit> = 4)
            
-        free_5_8:
+        free_5_5:
            import free_up_unit(<unit> = 5)
-           
-        free_6_8:
-           import free_up_unit(<unit> = 6)
-           
-        free_7_8:
-           import free_up_unit(<unit> = 7)
-           
-        free_8_8:
-           import free_up_unit(<unit> = 8)
 
     binding_end:
         set last_time @time
-        jump main_part always
 
 main_part:
     unit1_control:
+        jump unit2_control notEqual item1_needed true
+
         ubind unit1
         ulocate building core false i_love_you corex corey coref core
-        op add counter @counter 5
+        op add counter @counter 1
 
-        jump item1 equal item1_needed true
-        jump item2 equal item2_needed true
-        jump item3 equal item3_needed true
-        jump item4 equal item4_needed true
-        jump item5 equal item5_needed true
 
     unit2_control:
         jump main_part_end equal unit2 false
         ubind unit2
-        op add counter @counter 5
+        op add counter @counter 1
 
         jump item2 equal item2_needed true
-        jump item3 equal item3_needed true
-        jump item4 equal item4_needed true
-        jump item5 equal item5_needed true
-        jump item1 equal item1_needed true
 
     unit3_control:
         jump main_part_end equal unit3 false
         ubind unit3
-        op add counter @counter 5
+        op add counter @counter 1
 
         jump item3 equal item3_needed true
-        jump item4 equal item4_needed true
-        jump item5 equal item5_needed true
-        jump item1 equal item1_needed true
-        jump item2 equal item2_needed true
 
     unit4_control:
         jump main_part_end equal unit4 false
         ubind unit4
-        op add counter @counter 5
+        op add counter @counter 1
 
         jump item4 equal item4_needed true
-        jump item5 equal item5_needed true
-        jump item1 equal item1_needed true
-        jump item2 equal item2_needed true
-        jump item3 equal item3_needed true
 
     unit5_control:
         jump main_part_end equal unit5 false
         ubind unit5
-        op add counter @counter 5
+        op add counter @counter 1
 
         jump item5 equal item5_needed true
-        jump item1 equal item1_needed true
-        jump item2 equal item2_needed true
-        jump item3 equal item3_needed true
-        jump item4 equal item4_needed true
-
-    unit6_control:
-        jump main_part_end equal unit6 false
-        ubind unit6
-        op add counter @counter 5
-
-        jump item1 equal item1_needed true
-        jump item3 equal item3_needed true
-        jump item2 equal item2_needed true
-        jump item4 equal item4_needed true
-        jump item5 equal item5_needed true
-
-    unit7_control:
-        jump main_part_end equal unit7 false
-        ubind unit7
-        op add counter @counter 5
-
-        jump item3 equal item3_needed true
-        jump item5 equal item5_needed true
-        jump item1 equal item1_needed true
-        jump item2 equal item2_needed true
-        jump item4 equal item4_needed true
-
-    unit8_control:
-        jump main_part_end equal unit8 false
-        ubind unit8
-        op add counter @counter 5
-
-        jump item4 equal item4_needed true
-        jump item2 equal item2_needed true
-        jump item1 equal item1_needed true
-        jump item5 equal item5_needed true
-        jump item3 equal item3_needed true
 
     main_part_end:
         jump additional_code always
