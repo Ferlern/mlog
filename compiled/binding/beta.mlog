@@ -1,0 +1,177 @@
+constants:
+    set creator "[SG] Визя"
+    op mul mx @thisx 1000
+    op add flag mx @thisy
+    jump set_first always
+
+    after_first:
+
+    set unit_amount 5
+    set unit_line_amount 7
+    set attempt_amount 5
+
+    set current_unit first_unit
+    op mul unit_space unit_amount unit_line_amount
+    op add last_unit unit_space first_unit
+
+start:
+variables:
+    unit_type:
+        sensor choice sorter1 @config
+
+        jump free_up_binded_unit equal choice false
+        jump unit equal prev_choice choice
+        set prev_choice choice
+
+        set unit_type @flare
+        jump free_up_binded_unit equal choice @copper
+
+        set unit_type @mono
+        jump free_up_binded_unit equal choice @lead
+
+        set unit_type @horizon
+        jump free_up_binded_unit equal choice @metaglass
+
+        set unit_type @atrax
+        jump free_up_binded_unit equal choice @graphite
+
+        set unit_type false
+        jump free_up_binded_unit always
+
+    set_first:
+        op add first_unit @counter 2
+        jump after_first always
+
+    unit:
+        set @counter current_unit 
+
+        set unit unit1
+        set item @metaglass
+        set load_block conveyor1
+        op add backref @counter 1
+        jump increase_counter always
+        set unit1 unit
+        jump unit
+
+        set unit unit2
+        set item @metaglass
+        set load_block conveyor2
+        op add backref @counter 1
+        jump increase_counter always
+        set unit2 unit
+        jump unit
+
+        set unit unit3
+        set item @metaglass
+        set load_block conveyor3
+        op add backref @counter 1
+        jump increase_counter always
+        set unit3 unit
+        jump unit
+
+        set unit unit4
+        set item @silicon
+        set load_block hail1
+        op add backref @counter 1
+        jump increase_counter always
+        set unit4 unit
+        jump unit
+
+        set unit unit5
+        set item @silicon
+        set load_block hail2
+        op add backref @counter 1
+        jump increase_counter always
+        set unit5 unit
+        jump unit
+
+increase_counter:
+    op add current_unit current_unit unit_line_amount
+    jump unit_check lessThanEq current_unit last_unit
+    set current_unit first_unit
+
+unit_check:
+    sensor unit_dead unit @dead
+    jump unit_set_attempt_var notEqual unit_dead false
+    sensor unit_flag unit @flag
+    jump unit_unbind notEqual flag unit_flag
+
+    checked_successfully:
+        jump unit_task always
+
+    unit_unbind:
+        set unit false
+        set @counter backref
+
+    unit_set_attempt_var:
+        set attempt 0
+
+    unit_take_next:
+        ubind unit_type
+        op add attempt attempt 1
+        jump start greaterThan attempt attempt_amount
+
+        unit_is_free:
+            sensor controller @unit @controller
+            jump unit_take_next equal controller @unit
+            sensor unit_flag @unit @flag
+            jump unit_take_next greaterThan unit_flag 0
+
+    unit_bind:
+        set unit @unit
+        ucontrol flag flag
+        set @counter backref
+
+unit_task:
+    ubind unit
+    ulocate building core false i_love_you corex corey coref core
+
+    check_is_have_item:
+        sensor item_in_unit @unit @firstItem
+        jump drop_item_to_load_block equal item_in_unit item
+        jump take_item_from_core equal item_in_unit false
+
+        sensor item_in_load_block load_block item_in_unit
+        sensor load_block_capacity block1 @itemCapacity
+
+        jump take_item_from_core equal item_in_load_block false
+        jump take_item_from_core greaterThanEq item_in_load_block load_block_capacity
+
+        jump drop_item_to_load_block always
+
+        take_item_from_core:
+            ucontrol move corex corey
+            ucontrol itemTake core item 999
+            ucontrol itemDrop core 999
+            jump unit_end always
+
+        drop_item_to_load_block:
+            sensor load_block_x load_block @x
+            sensor load_block_y load_block @y
+            ucontrol move load_block_x load_block_y
+            ucontrol itemDrop load_block 999
+            jump unit_end always
+
+        unit_end:
+            jump start always
+
+free_up_binded_unit:
+    ubind unit1
+    ucontrol flag false
+    set unit1 false
+
+    ubind unit2
+    ucontrol flag false
+    set unit1 false
+
+    ubind unit3
+    ucontrol flag false
+    set unit1 false
+
+    ubind unit4
+    ucontrol flag false
+    set unit1 false
+
+    ubind unit5
+    ucontrol flag false
+    set unit1 false
